@@ -13,5 +13,6 @@ export interface TextPlot extends Plot {
     anchor?: string;
     xoffset?: number;
     yoffset?: number;
+    fontsize?: string;
     data: Array<TextPlotElement>;
 }

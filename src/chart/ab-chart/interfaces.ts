@@ -1,11 +1,13 @@
-import { XAxis, YAxis } from './axis/interfaces';
+import { Axis, LinearAxis, CategoricalAxis } from './axis/interfaces';
 
 
 export interface Chart {
     readonly title?: string;
     readonly margin?: Margin;
-    readonly xaxis: XAxis;
-    readonly yaxis: YAxis;
+    readonly aspectRatio?: number;
+    readonly xaxis: LinearAxis | CategoricalAxis;
+    readonly yaxis: LinearAxis;
+    readonly additionalYAxis?: {[key: string]: (LinearAxis | CategoricalAxis)};
     readonly plots: Array<Plot>;
 }
 
@@ -29,6 +31,7 @@ export enum PlotTypes {
 
 export interface Plot {
     readonly type: PlotTypes;
+    readonly yaxis?: string;
 }
 
 export * from './axis/interfaces';

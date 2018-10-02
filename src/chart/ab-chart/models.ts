@@ -24,10 +24,12 @@ export abstract class PlotModel {
 
     plot: Plot;
     drawing: Drawing;
+    yaxis = 'y';
 
     constructor(plot: Plot, drawing: Drawing) {
         this.plot = plot;
         this.drawing = drawing;
+        if ('yaxis' in plot) { this.yaxis = plot.yaxis; }
     }
 
     abstract initialize();

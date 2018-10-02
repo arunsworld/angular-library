@@ -60,7 +60,7 @@ export class GuidePlotModel extends PlotModel {
     }
 
     private line_func(drawing: Drawing) {
-        if (this.isHorizontal) { return GuidePlotModel.line_func_horizontal(drawing.y, drawing.dims.width); }
+        if (this.isHorizontal) { return GuidePlotModel.line_func_horizontal(drawing[this.yaxis], drawing.dims.width); }
         return GuidePlotModel.line_func_vertical(drawing.xaxis_type, drawing.x, drawing.dims.height);
     }
 

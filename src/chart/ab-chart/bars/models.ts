@@ -37,7 +37,7 @@ export class BarPlotModel extends PlotModel {
           .on('mouseout', this.tip !== undefined ? this.tip.hide : null);
         new_bars.append('rect')
                 .attr('x', 0)
-                .attr('y', (d) => this.drawing.y(d.y0))
+                .attr('y', (d) => this.drawing[this.yaxis](d.y0))
                 .attr('width', this.drawing.x.bandwidth())
                 .attr('height', 0)
                 .style('fill', (d) => 'color' in d ? d.color : this.color);
@@ -45,9 +45,9 @@ export class BarPlotModel extends PlotModel {
         bars.transition().duration(500)
             .attr('transform', (d) => 'translate(' + this.drawing.x(d.x) + ', 0)');
         bars.select('rect').transition().duration(500)
-            .attr('y', (d) => this.drawing.y(d.y))
+            .attr('y', (d) => this.drawing[this.yaxis](d.y))
             .attr('width', this.drawing.x.bandwidth())
-            .attr('height', (d) => this.drawing.y(d.y0) - this.drawing.y(d.y))
+            .attr('height', (d) => this.drawing[this.yaxis](d.y0) - this.drawing[this.yaxis](d.y))
             .style('fill', (d) => 'color' in d ? d.color : this.color);
     }
 
@@ -108,16 +108,16 @@ export class StackedBarModel extends PlotModel {
                 .on('mouseout', this.tip !== undefined ? this.tip.hide : null);
         new_bars.append('rect')
                 .attr('x', 0)
-                .attr('y', (d) => this.drawing.y(d.y0))
+                .attr('y', (d) => this.drawing[this.yaxis](d.y0))
                 .attr('width', this.drawing.x.bandwidth())
                 .attr('height', 0);
         bars = bars.merge(new_bars);
         bars.transition().duration(500)
             .attr('transform', (d) => 'translate(' + this.drawing.x(d.x) + ', 0)');
         bars.select('rect').transition().duration(500)
-            .attr('y', (d) => this.drawing.y(d.y))
+            .attr('y', (d) => this.drawing[this.yaxis](d.y))
             .attr('width', this.drawing.x.bandwidth())
-            .attr('height', (d) => this.drawing.y(d.y0) - this.drawing.y(d.y));
+            .attr('height', (d) => this.drawing[this.yaxis](d.y0) - this.drawing[this.yaxis](d.y));
     }
     y_range(): [number, number] {
         const min_y = min(this.plot.series, (s: StackedBarSeries) => min(s.data, (d: StackedBarElement) => d.y0));
@@ -178,7 +178,7 @@ export class GroupedBarModel extends PlotModel {
                 .on('mouseout', this.tip !== undefined ? this.tip.hide : null);
         new_bars.append('rect')
                 .attr('x', (d) => this.inner_scale(d.id))
-                .attr('y', this.drawing.y(0))
+                .attr('y', this.drawing[this.yaxis](0))
                 .attr('width', this.inner_scale.bandwidth())
                 .attr('height', 0);
         bars = bars.merge(new_bars);
@@ -186,9 +186,9 @@ export class GroupedBarModel extends PlotModel {
             .attr('transform', (d) => 'translate(' + this.drawing.x(d.data.x) + ', 0)');
         bars.select('rect').transition().duration(500)
             .attr('x', (d) => this.inner_scale(d.id))
-            .attr('y', (d) => this.drawing.y(d.data.y))
+            .attr('y', (d) => this.drawing[this.yaxis](d.data.y))
             .attr('width', this.inner_scale.bandwidth())
-            .attr('height', (d) => this.drawing.y(0) - this.drawing.y(d.data.y));
+            .attr('height', (d) => this.drawing[this.yaxis](0) - this.drawing[this.yaxis](d.data.y));
     }
 
     y_range(): [number, number] {

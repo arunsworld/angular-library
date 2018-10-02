@@ -48,7 +48,7 @@ export class LinePlotModel extends PlotModel {
     private line_func = (drawing: Drawing) => {
         return line()
                 .x( (d: any) => this.xloc(d, drawing) )
-                .y( (d: any) => drawing.y(d.y) )
+                .y( (d: any) => drawing[this.yaxis](d.y) )
                 .curve(this.interpolation);
     }
 

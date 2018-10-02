@@ -1,14 +1,13 @@
-import {Chart, Margin, CategoricalXAxis, LinearXAxis, BarPlot, Axis, Plot, TextPlot,
+import {Chart, Margin, CategoricalAxis, LinearAxis, BarPlot, Axis, Plot, TextPlot,
     ScatterPlot, StackedBarPlot, GroupedBarPlot, PlotTypes } from './interfaces';
 import { Drawing, PlotModel } from './models';
-import { XAxisModel, YAxisModel, CategoricalXAxisModel, LinearXAxisModel } from './axis/models';
+import { XAxisModel, YAxisModel, CategoricalXAxisModel, LinearXAxisModel, LinearYAxisModel } from './axis/models';
 import { BarPlotModel, StackedBarModel, GroupedBarModel } from './bars/models';
 import { TextPlotModel } from './text/models';
 import { LinePlotModel } from './lines/models';
 import { ScatterPlotModel } from './scatter/models';
 import { min, max, select, scaleBand, scaleLinear } from 'd3';
 import { LinePlot } from './lines/interfaces';
-import { AxisType, XAxis } from './axis/interfaces';
 import { GuidePlotModel } from './guide/models';
 import { GuidePlot } from './guide/interfaces';
 
@@ -18,9 +17,11 @@ declare var d3: any;
 export class ChartModel {
     private title = '';
     private margin = {top: 30, right: 20, bottom: 50, left: 50};
+    private aspectRatio = 1.5;
     private xaxisModel: XAxisModel;
     private yaxisModel: YAxisModel;
     private plotModels: Array<PlotModel> = [];
+    private additionalYAxis: {[key: string]: YAxisModel} = {};
 
     private drawing: Drawing;
 
@@ -33,10 +34,12 @@ export class ChartModel {
             if ('bottom' in m) { this.margin.bottom = chart.margin.bottom; }
             if ('left' in m) { this.margin.left = chart.margin.left; }
         }
+        if ('aspectRatio' in chart) { this.aspectRatio = chart.aspectRatio; }
         this.drawing = new Drawing();
         this.xaxisModel = ChartModel.xaxis_model_from_xaxis(chart.xaxis, this.drawing);
         this.drawing.xaxis_type = this.xaxisModel.type;
-        this.yaxisModel = new YAxisModel(chart.yaxis, this.drawing);
+        this.yaxisModel = new LinearYAxisModel(<LinearAxis>chart.yaxis, this.drawing);
+        this.setup_additional_yaxis(chart);
         chart.plots.forEach( (plot: Plot) => {
             this.plotModels.push(ChartModel.plot_model_for_plot(plot, this.drawing));
         });
@@ -58,30 +61,21 @@ export class ChartModel {
         }
     }
 
-    private static xaxis_model_from_xaxis(xaxis: XAxis, drawing: Drawing) {
+    private static xaxis_model_from_xaxis(xaxis: Axis, drawing: Drawing) {
         if ('values' in xaxis) {
-            return new CategoricalXAxisModel(<CategoricalXAxis> xaxis, drawing);
+            return new CategoricalXAxisModel(<CategoricalAxis> xaxis, drawing);
         }
-        return new LinearXAxisModel(<LinearXAxis> xaxis, drawing);
+        return new LinearXAxisModel(<LinearAxis> xaxis, drawing);
     }
 
-    private static xscale_from_xaxis_type(axisType: AxisType, width: number) {
-        switch (axisType) {
-            case AxisType.Linear: { return scaleLinear().rangeRound([0, width]); }
-            case AxisType.Categorical: { return scaleBand().rangeRound([0, width]).padding(0.1); }
-        }
-    }
 
     private initialize() {
         let width = 600;
-        let height = 400;
+        let height = width / this.aspectRatio;
         width = width - this.margin.left - this.margin.right;
         height = height - this.margin.top - this.margin.bottom;
         this.drawing.dims.width = width;
         this.drawing.dims.height = height;
-
-        this.drawing.x = ChartModel.xscale_from_xaxis_type(this.drawing.xaxis_type, width);
-        this.drawing.y = scaleLinear().rangeRound([height, 0]);
 
         this.draw_title();
 
@@ -95,24 +89,28 @@ export class ChartModel {
         this.drawing.yaxis = this.drawing.g.append('g').attr('class', 'yaxis');
         this.draw_yaxis_title(height);
 
+        this.xaxisModel.initialize();
+        this.yaxisModel.initialize();
+        this.initialize_additional_yaxis();
+
         this.plotModels.forEach( (plotModel: PlotModel) => {
             plotModel.initialize();
         });
     }
 
     draw() {
-        this.yaxisModel.data_range = this.y_range();
+        this.yaxisModel.data_range = this.y_range('y');
         this.yaxisModel.draw();
+        this.draw_additional_yaxis();
         this.xaxisModel.draw();
         this.xaxisModel.peg_xaxis_to_zero();
-
         this.plotModels.forEach( (plotModel: PlotModel) => {
             plotModel.draw();
         });
     }
 
-    y_range(): [number, number] {
-        const ranges = this.plotModels.map((p: PlotModel) => p.y_range());
+    y_range(axis: string): [number, number] {
+        const ranges = this.plotModels.filter((p: PlotModel) => p.yaxis === axis).map((p: PlotModel) => p.y_range());
         const min_y = min(ranges, (r) => r[0]);
         const max_y = max(ranges, (r) => r[1]);
         return [min_y, max_y];
@@ -150,6 +148,27 @@ export class ChartModel {
             .attr('fill', '#000')
             .attr('font-size', 15)
             .text(this.yaxisModel.title);
+    }
+
+    private setup_additional_yaxis(chart: Chart) {
+        if (!('additionalYAxis' in chart)) { return; }
+        Object.keys(chart.additionalYAxis).forEach( (name: string) => {
+            const newAxis = new LinearYAxisModel(<LinearAxis>chart.additionalYAxis[name], this.drawing, name, false);
+            this.additionalYAxis[name] = newAxis;
+        });
+    }
+
+    private initialize_additional_yaxis() {
+        Object.keys(this.additionalYAxis).forEach( (name: string) => {
+            this.additionalYAxis[name].initialize();
+        } );
+    }
+
+    private draw_additional_yaxis() {
+        Object.keys(this.additionalYAxis).forEach( (name: string) => {
+            this.additionalYAxis[name].data_range = this.y_range(name);
+            this.additionalYAxis[name].draw();
+        } );
     }
 
 }

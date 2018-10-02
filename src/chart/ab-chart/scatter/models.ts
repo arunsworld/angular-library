@@ -34,14 +34,14 @@ export class ScatterPlotModel extends PlotModel {
                                 .attr('class', 'dot')
                                 .attr('r', (d: ScatterPlotElement) => this.get_size(d))
                                 .attr('cx', (d: ScatterPlotElement) => this.drawing.x(d.x))
-                                .attr('cy', (d: ScatterPlotElement) => this.drawing.y(d.y))
+                                .attr('cy', (d: ScatterPlotElement) => this.drawing[this.yaxis](d.y))
                                 .on('mouseover', this.tip !== undefined ? this.tip.show : null)
                                 .on('mouseout', this.tip !== undefined ? this.tip.hide : null);
         dots = dots.merge(new_dots);
         dots.transition().duration(500)
                 .attr('r', (d: ScatterPlotElement) => this.get_size(d))
                 .attr('cx', (d: ScatterPlotElement) => this.drawing.x(d.x))
-                .attr('cy', (d: ScatterPlotElement) => this.drawing.y(d.y));
+                .attr('cy', (d: ScatterPlotElement) => this.drawing[this.yaxis](d.y));
     }
 
     y_range(): [number, number] {

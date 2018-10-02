@@ -13,6 +13,7 @@ export class TextPlotModel extends PlotModel {
     private xoffset = 0;
     private yoffset = 0;
     private yoffset_em;
+    private fontsize: string;
 
     private labelsg: any;
 
@@ -23,6 +24,7 @@ export class TextPlotModel extends PlotModel {
         if ('anchor' in plot) { this.anchor = plot.anchor; }
         if ('xoffset' in plot) { this.xoffset = plot.xoffset; }
         if ('yoffset' in plot) { this.yoffset = plot.yoffset; }
+        if ('fontsize' in plot) { this.fontsize = plot.fontsize; }
         this.yoffset_em = .35 - this.yoffset * 0.35;
     }
 
@@ -41,12 +43,14 @@ export class TextPlotModel extends PlotModel {
                             .attr('class', 'text')
                             .attr('transform', (d: TextPlotElement) => this.position_of_element(d, this.drawing))
                             .attr('opacity', 0);
-        new_labels.append('text')
+        const txt = new_labels.append('text')
             .text( (d: TextPlotElement) => d.text)
             .attr('dy', this.yoffset_em + 'em');
+        if (this.fontsize) { txt.attr('font-size', this.fontsize); }
         if (this.shape !== undefined) {
             new_labels.append('path')
                 .attr('d', symbol().type(this.shape));
+            txt.attr('dx', '.75em');
         }
         labels = labels.merge(new_labels);
         labels.transition().duration(500)
