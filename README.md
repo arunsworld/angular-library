@@ -9,7 +9,7 @@ This is a library of various Angular components.
 * `ab-chart` For various d3 charts: Bar, Text, Line, Scatter, etc. [depends on d3 & d3-tip]
 * `ab-bubble` For a Bubble chart
 * `ab-datatable` For a Datatable [depends on datatables.net & jquery]
-* `ab-datepicker` Jquery datepicker
+* `ab-datetimepicker` For bootstrap4-datetimepicker component. (https://eonasdan.github.io/bootstrap-datetimepicker/)
 * `ab-dropzone` Dropzone for file uploads [depends on dropzone]
 * `ab-select2` Select2 component with Bootstrap styling [depends on select2]
 * `RouteReuseStrategyService` that reuses routes
