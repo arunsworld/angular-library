@@ -68,6 +68,10 @@ export class DataTablesComponent implements AfterViewInit {
         this.dataTable_api.draw();
     }
 
+    api(): any {
+        return this.dataTable_api;
+    }
+
     private setupDataTable() {
         const options = {
             data: this.data.rows,
