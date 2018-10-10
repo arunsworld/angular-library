@@ -12,3 +12,4 @@ export * from './src/chart/ab-chart/chart.component';
 export * from './src/chart/ab-bubble/bubble.component';
 export * from './src/datatables/datatables.component';
 export * from './src/dropzone/dropzone.component';
+export * from './src/modal/modal.component';

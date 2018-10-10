@@ -11,6 +11,7 @@ import { ChartComponent } from './chart/ab-chart/chart.component';
 import { BubbleComponent } from './chart/ab-bubble/bubble.component';
 import { BootstrapCardComponent } from './bootstrap-components/bootstrap-card.component';
 import { DatetimePickerComponent } from './datepicker/datetimepicker.component';
+import { ModalComponent } from './modal/modal.component';
 
 @NgModule({
   imports: [
@@ -19,9 +20,9 @@ import { DatetimePickerComponent } from './datepicker/datetimepicker.component';
   ],
   declarations: [LoadingComponent, BootstrapNavbarComponent, Select2Component,
     BootstrapLoginComponent, ChartComponent, BubbleComponent, BootstrapCardComponent,
-    DataTablesComponent, DropzoneComponent, DatetimePickerComponent],
+    DataTablesComponent, DropzoneComponent, DatetimePickerComponent, ModalComponent],
   exports: [LoadingComponent, BootstrapNavbarComponent, Select2Component,
     BootstrapLoginComponent, ChartComponent, BubbleComponent, BootstrapCardComponent,
-    DataTablesComponent, DropzoneComponent, DatetimePickerComponent]
+    DataTablesComponent, DropzoneComponent, DatetimePickerComponent, ModalComponent]
 })
 export class LibraryModule { }
