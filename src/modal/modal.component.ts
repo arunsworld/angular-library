@@ -36,4 +36,8 @@ export class ModalComponent {
         $(this.modal.nativeElement).modal('show');
     }
 
+    hide() {
+        $(this.modal.nativeElement).modal('hide');
+    }
+
 }
